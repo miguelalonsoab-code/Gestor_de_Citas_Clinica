@@ -1,43 +1,115 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
-/**
- * CLASE: VentanaPrincipal
- * ─────────────────────────────────────────────
- * Ventana principal del sistema (JFrame).
- * Usa JTabbedPane para organizar los módulos en pestañas.
- *
- * Instancia UNA SOLA VEZ cada gestor y lo pasa a los paneles,
- * garantizando que todos compartan los mismos datos en memoria.
- */
+
 public class VentanaPrincipal extends JFrame {
 
-    // ── Gestores compartidos entre todos los paneles ─────────────
-    // Una sola instancia por gestor → todos los paneles ven los mismos datos
     private final GestorPacientes gestorPacientes = new GestorPacientes();
     private final GestorMedicos   gestorMedicos   = new GestorMedicos();
     private final GestorCitas     gestorCitas      = new GestorCitas();
 
+    private JLabel statusBar;
+
     public VentanaPrincipal() {
+        ManejadorArchivos.inicializar();
+
+        cargarDatosDesdeArchivos();
+
+        if (gestorPacientes.getCantidad() == 0) {
+            cargarDemostracion();
+        }
+
         configurarVentana();
-        cargarDemostracion();
+
         construirUI();
+
+        configurarGuardadoAlCerrar();
     }
 
-    // ── Configuración base del JFrame ─────────────────────────────
+    
+    private void cargarDatosDesdeArchivos() {
+        ArrayList<Paciente> pacientesCargados = ManejadorArchivos.cargarPacientes();
+        gestorPacientes.cargarLista(pacientesCargados);
+
+        ArrayList<Medico> medicosCargados = ManejadorArchivos.cargarMedicos();
+        gestorMedicos.cargarLista(medicosCargados);
+
+        ArrayList<Cita> citasCargadas = ManejadorArchivos.cargarCitas(
+                gestorPacientes, gestorMedicos);
+        gestorCitas.cargarLista(citasCargadas);
+    }
+
+   
     private void configurarVentana() {
         setTitle("Sistema de Gestión Clínica — UPN");
         setSize(1100, 700);
         setMinimumSize(new Dimension(900, 600));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // centrar en pantalla
+
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
     }
 
-    // ── Header superior ───────────────────────────────────────────
+    
+    private void construirUI() {
+        add(crearHeader(), BorderLayout.NORTH);
+
+        JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+        tabs.setFont(new Font("Arial", Font.PLAIN, 13));
+
+        tabs.addTab("👤 Pacientes", new PanelPacientes(gestorPacientes));
+        tabs.addTab("🩺 Médicos",   new PanelMedicos(gestorMedicos));
+        tabs.addTab("📅 Citas",     new PanelCitas(gestorCitas, gestorPacientes, gestorMedicos));
+        tabs.addTab("📊 Reportes",  new PanelReportes(gestorPacientes, gestorMedicos, gestorCitas));
+
+        add(tabs, BorderLayout.CENTER);
+
+        statusBar = new JLabel("  Sistema listo.  Pacientes: "
+                + gestorPacientes.getCantidad()
+                + "  |  Médicos: " + gestorMedicos.getTodos().size()
+                + "  |  Citas: " + gestorCitas.getCantidad());
+        statusBar.setFont(new Font("Arial", Font.PLAIN, 11));
+        statusBar.setForeground(Color.DARK_GRAY);
+        statusBar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)));
+        add(statusBar, BorderLayout.SOUTH);
+    }
+
+   
+    private void configurarGuardadoAlCerrar() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int respuesta = JOptionPane.showConfirmDialog(
+                        VentanaPrincipal.this,
+                        "¿Deseas guardar los datos antes de salir?",
+                        "Guardar y salir",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+
+                if (respuesta == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ManejadorArchivos.guardarPacientes(gestorPacientes.getTodos());
+                    ManejadorArchivos.guardarMedicos(gestorMedicos.getTodos());
+                    ManejadorArchivos.guardarCitas(gestorCitas.getTodas());
+                    System.out.println("✔ Datos guardados.");
+                }
+
+                System.exit(0);
+            }
+        });
+    }
+
     private JPanel crearHeader() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(new Color(31, 78, 121)); // azul oscuro
+        header.setBackground(new Color(31, 78, 121));
         header.setPreferredSize(new Dimension(0, 60));
         header.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
@@ -58,34 +130,7 @@ public class VentanaPrincipal extends JFrame {
         return header;
     }
 
-    // ── Construcción de la UI principal ───────────────────────────
-    private void construirUI() {
-        // Header
-        add(crearHeader(), BorderLayout.NORTH);
 
-        // Pestañas — cada una recibe los gestores compartidos
-        JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
-        tabs.setFont(new Font("Arial", Font.PLAIN, 13));
-
-        // Pasar los gestores a cada panel para que compartan datos
-        tabs.addTab("👤 Pacientes",  new PanelPacientes(gestorPacientes));
-        tabs.addTab("🩺 Médicos",    new PanelMedicos(gestorMedicos));
-        tabs.addTab("📅 Citas",      new PanelCitas(gestorCitas, gestorPacientes, gestorMedicos));
-        tabs.addTab("📊 Reportes",   new PanelReportes(gestorPacientes, gestorMedicos, gestorCitas));
-
-        add(tabs, BorderLayout.CENTER);
-
-        // Barra de estado inferior
-        JLabel statusBar = new JLabel("  Sistema iniciado con datos de demostración.");
-        statusBar.setFont(new Font("Arial", Font.PLAIN, 11));
-        statusBar.setForeground(Color.DARK_GRAY);
-        statusBar.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(4, 10, 4, 10)));
-        add(statusBar, BorderLayout.SOUTH);
-    }
-
-    // ── Datos de demostración ─────────────────────────────────────
     private void cargarDemostracion() {
         Medico m1 = gestorMedicos.registrarMedico("Carlos","Quispe","45123456",
                 "999111222","c.quispe@clinica.pe","CMP-12345",

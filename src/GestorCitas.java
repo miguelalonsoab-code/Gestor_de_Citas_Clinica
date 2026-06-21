@@ -75,4 +75,14 @@ public class GestorCitas {
 
     public ArrayList<Cita> getTodas() { return citas; }
     public int getCantidad() { return citas.size(); }
+    
+    public void cargarLista(ArrayList<Cita> lista) {
+        for (Cita c : lista) {
+            citas.add(c);
+            try {
+                int num = Integer.parseInt(c.getIdCita().replace("CIT-", ""));
+                if (num >= contadorId) contadorId = num + 1;
+            } catch (NumberFormatException ignored) { }
+        }
+    }
 }
