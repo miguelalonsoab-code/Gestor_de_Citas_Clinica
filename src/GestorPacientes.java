@@ -72,4 +72,14 @@ public class GestorPacientes {
 
     public ArrayList<Paciente> getTodos() { return pacientes; }
     public int getCantidad() { return pacientes.size(); }
+    
+    public void cargarLista(ArrayList<Paciente> lista) {
+        for (Paciente p : lista) {
+            pacientes.add(p);
+            try {
+                int num = Integer.parseInt(p.getId().replace("PAC-", ""));
+                if (num >= contadorId) contadorId = num + 1;
+            } catch (NumberFormatException ignored) { }
+        }
+    }
 }

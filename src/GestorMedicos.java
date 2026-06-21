@@ -56,4 +56,14 @@ public class GestorMedicos {
     }
 
     public ArrayList<Medico> getTodos() { return medicos; }
+    
+    public void cargarLista(ArrayList<Medico> lista) {
+        for (Medico m : lista) {
+            medicos.add(m);
+            try {
+                int num = Integer.parseInt(m.getId().replace("MED-", ""));
+                if (num >= contadorId) contadorId = num + 1;
+            } catch (NumberFormatException ignored) { }
+        }
+    }
 }
