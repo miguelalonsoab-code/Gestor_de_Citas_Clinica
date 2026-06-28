@@ -1,0 +1,5 @@
+id,nombre,apellido,dni,telefono,correo,fechaNacimiento,grupoSanguineo,alergias,activo
+PAC-001,Ana,García,72111111,987654321,ana@gmail.com,15/03/1995,O+,Penicilina,true
+PAC-002,Juan,Ríos,72222222,987123456,juan@gmail.com,22/07/1988,A+,Ninguna,true
+PAC-003,María,López,72333333,987789012,maria@gmail.com,05/11/2010,B-,Ibuprofeno,true
+PAC-004,Miguel,Clavo,71347517,991074732,notiene@gmail.com,13/06/2001,O+,ninguna,true
