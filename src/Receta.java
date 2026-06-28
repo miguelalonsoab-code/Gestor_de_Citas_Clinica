@@ -48,4 +48,5 @@ public class Receta {
     public Cita       getCita()         { return cita; }
     public ArrayList<String> getMedicamentos() { return medicamentos; }
     public String     getIndicaciones() { return indicaciones; }
+    public String getFechaEmision() { return fechaEmision; }
 }
