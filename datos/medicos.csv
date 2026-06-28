@@ -1,0 +1,4 @@
+id,nombre,apellido,dni,telefono,correo,colegiatura,especialidad,tarifa,disponible
+MED-001,Carlos,Quispe,45123456,999111222,c.quispe@clinica.pe,CMP-12345,MEDICINA_GENERAL,80.0,true
+MED-002,Laura,Flores,46234567,999333444,l.flores@clinica.pe,CMP-23456,PEDIATRIA,100.0,true
+MED-003,Roberto,Mamani,47345678,999555666,r.mamani@clinica.pe,CMP-34567,CARDIOLOGIA,150.0,true
