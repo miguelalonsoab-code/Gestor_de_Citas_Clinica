@@ -14,7 +14,7 @@ public class SistemaClinica {
 
     private static GestorPacientes gestorPacientes = new GestorPacientes();
     private static GestorMedicos   gestorMedicos   = new GestorMedicos();
-    private static GestorCitas     gestorCitas      = new GestorCitas();
+    private static GestorCitas     gestorCitas      = new GestorCitas(gestorPacientes);
     private static ArrayList<Receta> recetas        = new ArrayList<>();
     private static int contadorReceta = 1;
 
