@@ -48,5 +48,8 @@ public class Paciente extends Persona {
     public String getHistorial()       { return historialMedico; }
     public boolean isActivo()          { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+    public void setHistorialDirecto(String historial) {
+        this.historialMedico = historial;
+    }
     public void setAlergias(String alergias) { this.alergias = alergias; }
 }
