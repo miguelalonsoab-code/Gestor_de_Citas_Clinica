@@ -124,6 +124,23 @@ public class CitaDAO {
         }
     }
 
+    public boolean existeConflicto(String idMedico, String fecha, String hora) {
+        String sql = "SELECT COUNT(*) FROM citas "
+                   + "WHERE id_medico = ? AND fecha = ? AND hora = ? "
+                   + "AND estado != 'CANCELADA'";
+        try (PreparedStatement ps = ConexionDB.getConexion().prepareStatement(sql)) {
+            ps.setString(1, idMedico);
+            ps.setString(2, fecha);
+            ps.setString(3, hora);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("✘ Error al verificar conflicto de horario: " + e.getMessage());
+        }
+        return false;
+    }
+
     public int contarCitas() {
         String sql = "SELECT COUNT(*) FROM citas";
         try (PreparedStatement ps = ConexionDB.getConexion().prepareStatement(sql);
