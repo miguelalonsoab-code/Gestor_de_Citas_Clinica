@@ -181,12 +181,17 @@ public class PanelPacientes extends JPanel {
                         "Campo vacío", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            p.setTelefono(tel);
-            p.setCorreo(correo);
-            actualizarTabla();
-            JOptionPane.showMessageDialog(this,
-                    "✔ Datos de contacto actualizados para " + p.getNombreCompleto(),
-                    "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
+            boolean ok = gestor.actualizarContacto(id, tel, correo);
+            if (ok) {
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this,
+                        "✔ Datos de contacto actualizados para " + p.getNombreCompleto(),
+                        "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ No se pudo actualizar el contacto en la base de datos.",
+                        "Error de actualización", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
