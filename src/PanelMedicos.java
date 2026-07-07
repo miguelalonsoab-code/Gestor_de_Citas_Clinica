@@ -157,12 +157,18 @@ public class PanelMedicos extends JPanel {
                     JOptionPane.showMessageDialog(this,"La tarifa debe ser mayor a 0.",
                             "Valor inválido",JOptionPane.WARNING_MESSAGE); return;
                 }
-                m.setTarifaConsulta(nueva);
-                actualizarTabla();
-                JOptionPane.showMessageDialog(this,
-                    "✔ Tarifa actualizada a S/ "+String.format("%.2f",nueva)+
-                    " para Dr. "+m.getNombreCompleto(),
-                    "Tarifa actualizada",JOptionPane.INFORMATION_MESSAGE);
+                boolean ok = gestor.actualizarTarifa(id, nueva);
+                if (ok) {
+                    actualizarTabla();
+                    JOptionPane.showMessageDialog(this,
+                        "✔ Tarifa actualizada a S/ "+String.format("%.2f",nueva)+
+                        " para Dr. "+m.getNombreCompleto(),
+                        "Tarifa actualizada",JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                        "⚠ No se pudo actualizar la tarifa en la base de datos.",
+                        "Error de actualización",JOptionPane.ERROR_MESSAGE);
+                }
             } catch(NumberFormatException ex){
                 JOptionPane.showMessageDialog(this,"Ingresa un número válido (ej: 120.00)",
                         "Formato incorrecto",JOptionPane.ERROR_MESSAGE);
@@ -176,11 +182,18 @@ public class PanelMedicos extends JPanel {
         if(fila<0){sinSel();return;}
         Medico m=gestor.buscarPorId((String)modelo.getValueAt(fila,0));
         if(m==null) return;
-        m.setDisponible(!m.isDisponible());
-        actualizarTabla();
-        JOptionPane.showMessageDialog(this,
-            "✔ Dr. "+m.getNombreCompleto()+" → "+(m.isDisponible()?"Disponible":"No disponible"),
-            "Disponibilidad actualizada",JOptionPane.INFORMATION_MESSAGE);
+        boolean nuevaDisponibilidad = !m.isDisponible();
+        boolean ok = gestor.actualizarDisponibilidad(m.getId(), nuevaDisponibilidad);
+        if (ok) {
+            actualizarTabla();
+            JOptionPane.showMessageDialog(this,
+                "✔ Dr. "+m.getNombreCompleto()+" → "+(nuevaDisponibilidad?"Disponible":"No disponible"),
+                "Disponibilidad actualizada",JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "⚠ No se pudo actualizar la disponibilidad en la base de datos.",
+                "Error de actualización",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void verDetalle(){

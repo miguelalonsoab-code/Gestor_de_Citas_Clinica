@@ -161,11 +161,17 @@ public class PanelCitas extends JPanel {
                 "Solo se pueden confirmar citas en estado PENDIENTE.\nEstado actual: "+c.getEstado(),
                 "Estado inválido",JOptionPane.WARNING_MESSAGE); return;
         }
-        c.confirmar();
-        actualizarTabla();
-        JOptionPane.showMessageDialog(this,
-            "✔ Cita "+c.getIdCita()+" confirmada para "+c.getPaciente().getNombreCompleto(),
-            "Cita confirmada",JOptionPane.INFORMATION_MESSAGE);
+        boolean ok = gestorCitas.confirmarCita(c.getIdCita());
+        if (ok) {
+            actualizarTabla();
+            JOptionPane.showMessageDialog(this,
+                "✔ Cita "+c.getIdCita()+" confirmada para "+c.getPaciente().getNombreCompleto(),
+                "Cita confirmada",JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "⚠ No se pudo confirmar la cita en la base de datos.",
+                "Error de actualización",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // ── HU-06: Completar cita con diagnóstico ────────────────────
@@ -182,11 +188,17 @@ public class PanelCitas extends JPanel {
                 "Diagnóstico para cita "+c.getIdCita()+":",
                 "Registrar Diagnóstico",JOptionPane.QUESTION_MESSAGE);
         if(diag!=null&&!diag.trim().isEmpty()){
-            c.completarCita(diag.trim());
-            actualizarTabla();
-            JOptionPane.showMessageDialog(this,
-                    "✔ Cita completada. Diagnóstico registrado en historial del paciente.",
-                    "Cita completada",JOptionPane.INFORMATION_MESSAGE);
+            boolean ok = gestorCitas.completarCita(c.getIdCita(), diag.trim());
+            if (ok) {
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this,
+                        "✔ Cita completada. Diagnóstico registrado en historial del paciente.",
+                        "Cita completada",JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ No se pudo completar la cita en la base de datos.",
+                        "Error de actualización",JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -203,8 +215,15 @@ public class PanelCitas extends JPanel {
         int conf=JOptionPane.showConfirmDialog(this,"¿Cancelar cita "+c.getIdCita()+"?",
                 "Confirmar",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
         if(conf==JOptionPane.YES_OPTION){
-            c.cancelar(); actualizarTabla();
-            JOptionPane.showMessageDialog(this,"✔ Cita cancelada.","Cancelada",JOptionPane.INFORMATION_MESSAGE);
+            boolean ok = gestorCitas.cancelarCita(c.getIdCita());
+            if (ok) {
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this,"✔ Cita cancelada.","Cancelada",JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ No se pudo cancelar la cita en la base de datos.",
+                        "Error de actualización",JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
