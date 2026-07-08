@@ -26,7 +26,7 @@ public class ConexionDB {
                                          + "&allowPublicKeyRetrieval=true"
                                          + "&serverTimezone=America/Lima";
     private static final String USUARIO  = "root";
-    private static final String PASSWORD = "121312Miki+"; 
+    private static final String PASSWORD = "contraseña aquí"; 
 
     // Instancia única de la conexión (patrón Singleton)
     private static Connection conexion = null;
